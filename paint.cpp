@@ -1,63 +1,58 @@
-#include <vector>
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 vector<int> cnt;
 
-bool comp(int u, int v) {
-    return cnt[v] < cnt[u];
+bool cmp(int u, int v) {
+    return cnt[u] > cnt[v];
 }
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<int> order;
-    int iter = 0;
-    while (iter < n) {
-        order.push_back(iter);
-        ++iter;
+    vector<vector<bool>> g(n, vector<bool> (n, false));
+    vector<int> k;
+    for (int i = 0; i < n; i++) {
+        k.push_back(i);
     }
-    cnt.assign(n, 0);
-    vector<vector<bool>> graph(n, vector<bool> (n, false));
-    for (iter = 0; iter < m; ++iter) {
+    cnt.resize(n, 0);
+    for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
-        graph[u][v] = graph[v][u] = true;
-        ++cnt[u];
-        ++cnt[v];
+        g[u][v] = true;
+        g[v][u] = true;
+        cnt[u]++;
+        cnt[v]++;
     }
-    vector<int> color(n);
-    int c = 1;
-    sort(order.begin(), order.end(), comp);
-    while (true) {
+    sort(k.begin(), k.end(), cmp);
+    
+    vector<int> col(n, 0);
+    for (int c = 1; true; c++) {
         bool flag = true;
-        for (iter = 0; iter < n; ++iter) {
-            if (color[iter] == 0) {
-                flag = false;
-            }
+        for (int i = 0; i < n; i++) {
+            if (!col[i]) flag = false;
         }
         if (flag) {
-            cout << c - 1;
-            return 0;
+            cout << c - 1 << '\n';
+            break;
         }
+
         vector<int> cn;
-        for (auto u : order) {
-            if (color[u] == 0) {
-                bool nl = true;
-                for (auto v : cn) {
-                    if (graph[iter][v] != 0) {
-                        nl = false;
+        for (int i : k) {
+            if (!col[i]) {
+                bool tcol = true;
+                for (int v : cn) {
+                    if (g[i][v]) {
+                        tcol = false;
                         break;
                     }
                 }
-                if (nl) {
-                    color[iter] = c;
-                    cn.push_back(iter);
+                if (tcol) {
+                    col[i] = c;
+                    cn.push_back(i);
                 }
             }
         }
-        c++;
     }
 }
