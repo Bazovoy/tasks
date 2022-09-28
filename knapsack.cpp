@@ -1,28 +1,28 @@
 #include <vector>
 #include <iostream>
+#include <algorithm>
+#include <tuple>
 
 using namespace std;
 
 int main() {
     int n, m;
     cin >> n >> m;
-    vector<int> cost;
-    vector<int> weight;
     int iter = 0;
+    vector<tuple<long double, int, int>> order;
     for (; iter < n; ++iter) {
         int p, w;
         cin >> p >> w;
-        cost.push_back(p);
-        weight.push_back(w);
+        order.push_back({(long double) w / (long double) p, w, p});
     }
-    vector<int> ans(m + 1);
-    iter = 0;
-    for (; iter < n; ++iter) {
-        for (int j = m; j - weight[iter] >= 0; --j) {
-            if (ans[j - weight[iter]] + cost[iter] > ans[j]) {
-                ans[j] = ans[j - weight[iter]] + cost[iter];
-            }
+    int ans = 0;
+    int wm = 0;
+    sort(order.begin(), order.end());
+    for (auto [k, w, p] : order) {
+        if (wm + w <= m) {
+            wm += w;
+            ans += p;
         }
     }
-    cout << ans[m] << '\n';
+    cout << ans << '\n';
 }
